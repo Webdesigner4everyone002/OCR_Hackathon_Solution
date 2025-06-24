@@ -1,0 +1,15 @@
+debug_mode: true
+image_extensions:
+- '*.jpg'
+- '*.jpeg'
+- '*.png'
+- '*.bmp'
+- '*.tiff'
+- '*.tif'
+input_folder: ./input_images
+max_images: 0
+max_text_length: 8000
+ocr_confidence_threshold: 30
+ollama_base_url: http://localhost:11434
+ollama_model: llama3.2:3b
+output_folder: ./output
