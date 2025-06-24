@@ -19,14 +19,14 @@ import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 
-# ====== CONFIGURATION VARIABLES ======
-INPUT_FOLDER = "./input_images"  # Folder containing medical report images
-OUTPUT_FOLDER = "./output"       # Where to save results
-MAX_IMAGES = 0                   # 0 = process all images, else limit to this number
-OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama URL
-OLLAMA_MODEL = "llama3.2:3b"  # Model to use
-DEBUG_MODE = True                # Enable detailed debugging output
-# =====================================
+
+INPUT_FOLDER = "./input_images"  
+OUTPUT_FOLDER = "./output"       
+MAX_IMAGES = 0                  
+OLLAMA_BASE_URL = "http://localhost:11434" 
+OLLAMA_MODEL = "llama3.2:3b"  
+DEBUG_MODE = True               
+
 
 class MedicalReportOCR:
     def __init__(self, ollama_url=OLLAMA_BASE_URL, model_name=OLLAMA_MODEL):
@@ -240,7 +240,6 @@ Return ONLY the JSON structure, no additional text or explanations."""
                     'status_code': response.status_code
                 }
             
-            # Parse the response
             try:
                 result = response.json()
                 if DEBUG_MODE:
@@ -277,7 +276,7 @@ Return ONLY the JSON structure, no additional text or explanations."""
                     'full_ollama_result': result
                 }
             
-            # Clean up the response to get just the JSON
+            
             original_json_text = json_text
             
             if json_text.startswith('```json'):
@@ -313,7 +312,6 @@ Return ONLY the JSON structure, no additional text or explanations."""
                         print(f"   ⚠️  No JSON structure found in response!")
                         print(f"   📄 Full cleaned text: {json_text}")
             
-            # Parse and return JSON
             try:
                 parsed_json = json.loads(json_text)
                 if DEBUG_MODE:
@@ -338,7 +336,7 @@ Return ONLY the JSON structure, no additional text or explanations."""
                     }
                 }
             
-            # Add metadata
+           
             parsed_json['_metadata'] = {
                 'source_image': image_filename,
                 'extraction_method': 'tesseract_ollama_deepseek',
@@ -403,7 +401,7 @@ Return ONLY the JSON structure, no additional text or explanations."""
             
             print(f"   📝 Extracted {len(extraction_details)} text blocks")
             
-            # Generate structured JSON using Ollama
+            
             ollama_result = self.generate_json_with_ollama(extracted_text, image_filename)
             
             if ollama_result['success']:
@@ -530,15 +528,14 @@ def main():
         print(f"Processing {i+1}/{len(image_files)}")
         print(f"{'='*50}")
         
-        # Process image
+        
         result = ocr_processor.process_image(image_path)
         
-        # Generate output filenames
         base_name = os.path.splitext(os.path.basename(image_path))[0]
         json_filename = f"{base_name}_extracted.json"
         json_filepath = os.path.join(json_output_dir, json_filename)
         
-        # Save raw extracted text regardless of JSON processing success
+       
         if 'extracted_text' in result and result['extracted_text'].strip():
             text_success, text_result = save_raw_text(
                 result['extracted_text'], 
@@ -553,7 +550,6 @@ def main():
                 print(f"   ❌ Failed to save raw text: {text_result}")
         
         if result['success']:
-            # Save structured JSON
             try:
                 with open(json_filepath, 'w', encoding='utf-8') as f:
                     json.dump(result['structured_json'], f, indent=2, ensure_ascii=False)
@@ -603,8 +599,7 @@ def main():
                 print(f"   💾 Error details saved to: {error_filename}")
             except Exception as e:
                 print(f"   ❌ Failed to save error details: {str(e)}")
-            
-            # Save debug information if enabled
+    
             if DEBUG_MODE and 'ollama_error_details' in result:
                 debug_filename = f"{base_name}_debug.json"
                 debug_filepath = os.path.join(debug_output_dir, debug_filename)
@@ -619,7 +614,6 @@ def main():
             print(f"   ❌ Failed to process: {result['error']}")
             failed_count += 1
     
-    # Final summary
     print(f"\n{'='*60}")
     print(f"🎉 PROCESSING COMPLETE!")
     print(f"{'='*60}")
